@@ -2,13 +2,13 @@ const express = require("express");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
-// App
 const app = express();
-//TODO: remove log
-console.log("*LOG: App is running");
+
+// Routers
+const userRouter = require("./api/routes/user");
 
 // Config app
-
+app.use("/user", userRouter);
 // Connect to MongoDB
 mongoose.connect(
   "mongodb+srv://dbPeter:" +
