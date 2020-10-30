@@ -7,6 +7,8 @@ const app = express();
 //TODO: remove log
 console.log("*LOG: App is running");
 
+// Config app
+
 // Connect to MongoDB
 mongoose.connect(
   "mongodb+srv://dbPeter:" +
@@ -22,7 +24,7 @@ mongoose.connect(
 app.use(morgan("dev"));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-
+// Handle header
 app.use((req, res, next) => {
   res.header(
     "Access-Control-Allow-Headers",
@@ -39,7 +41,7 @@ app.use((req, res, next) => {
   next();
 });
 
-//Handle unexpected errors
+//Handle 404 error
 app.use((req, res, next) => {
   const error = new Error("Page Not Found");
   error.status = 404;
