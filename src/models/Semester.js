@@ -18,6 +18,12 @@ const semesterSchema = new mongoose.Schema(
       required: true,
       default: false,
     },
+    registrations: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Registration",
+      },
+    ],
   },
   { timestamps: true }
 );
