@@ -10,7 +10,8 @@ const router = express.Router();
 router.use(requireAuth);
 
 // GET Method: get a track
-router.get("/semester", async (req, res) => {
+// TODO: attach list of registration belongs to that semester
+router.get("/", async (req, res) => {
   const semester = await Semester.find({ isOpening: true });
   if (!semester) {
     return res.status(404).json({
@@ -24,7 +25,7 @@ router.get("/semester", async (req, res) => {
 });
 
 // POST Method: create a new Semester
-router.post("/semesters", async (req, res) => {
+router.post("/", async (req, res) => {
   if (req.role === "LECTURER" || !req.role) {
     return res.status(403).json({
       message: "ADMIN authorization required!",
@@ -55,7 +56,7 @@ router.post("/semesters", async (req, res) => {
 });
 
 // PUT Method: Update an existing Semester
-router.put("/semesters/:semesterId", (req, res) => {
+router.put("/:semesterId", (req, res) => {
   const id = req.params.semesterId;
   console.log("req.body: ", req.body);
   const updateOps = {};

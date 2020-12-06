@@ -7,7 +7,7 @@ const User = mongoose.model("User");
 const router = express.Router();
 
 // POST Method Create user
-router.post("/user", async (req, res) => {
+router.post("/", async (req, res) => {
   const user = new User({
     email: req.body.email,
     fullname: req.body.fullname,
