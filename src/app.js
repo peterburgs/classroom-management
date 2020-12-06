@@ -1,4 +1,6 @@
+// Import Models
 require("./models/User");
+require("./models/Semester");
 
 const express = require("express");
 const morgan = require("morgan");
@@ -9,6 +11,7 @@ const requireAuth = require("./middlewares/requireAuth");
 // Routers
 const authRoutes = require("../src/routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
+const semesterRoutes = require("./routes/semesterRoutes");
 // Config app
 
 // Connect to MongoDB
@@ -49,6 +52,7 @@ app.use((req, res, next) => {
 // Use Routes
 app.use(authRoutes);
 app.use(userRoutes);
+app.use(semesterRoutes);
 
 app.get("/", requireAuth, (req, res) => {
   res.status(200).json({
