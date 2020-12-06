@@ -1,25 +1,30 @@
+require("./models/User");
+
 const express = require("express");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const app = express();
-
+const requireAuth = require("./middlewares/requireAuth");
 // Routers
-const userRouter = require("./api/routes/user");
-
+const authRoutes = require("../src/routes/authRoutes");
+const userRoutes = require("./routes/userRoutes");
 // Config app
-app.use("/user", userRouter);
+
 // Connect to MongoDB
-mongoose.connect(
-  "mongodb+srv://dbPeter:" +
-    process.env.MONGO_ATLAS_PW +
-    "@lab-management-cluster.zaxn3.mongodb.net/<dbname>?retryWrites=true&w=majority",
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useCreateIndex: true,
-  }
-);
+mongoose.connect(process.env.CONNECTION_STRING, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useCreateIndex: true,
+});
+
+// Test connection status
+mongoose.connection.on("connected", () => {
+  console.log("*LOG: Connected to MongoDB successfully!");
+});
+mongoose.connection.on("error", () => {
+  console.log("*LOG: Fail to connect to MongoDB!");
+});
 
 app.use(morgan("dev"));
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -39,6 +44,16 @@ app.use((req, res, next) => {
     return res.status(200).json({});
   }
   next();
+});
+
+// Use Routes
+app.use(authRoutes);
+app.use(userRoutes);
+
+app.get("/", requireAuth, (req, res) => {
+  res.status(200).json({
+    message: `Welcome ${req.user.name}`,
+  });
 });
 
 //Handle 404 error
