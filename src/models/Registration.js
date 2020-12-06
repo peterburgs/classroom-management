@@ -22,6 +22,10 @@ const registrationSchema = new mongoose.Schema(
       required: true,
       default: false,
     },
+    semesterId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Semester",
+    },
   },
   { timestamps: true }
 );

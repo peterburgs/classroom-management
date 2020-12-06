@@ -1,6 +1,7 @@
 // Import Models
 require("./models/User");
 require("./models/Semester");
+require("./models/Registration");
 
 const express = require("express");
 const morgan = require("morgan");
@@ -12,6 +13,7 @@ const requireAuth = require("./middlewares/requireAuth");
 const authRoutes = require("../src/routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const semesterRoutes = require("./routes/semesterRoutes");
+const registrationRoutes = require("./routes/registrationRoutes");
 // Config app
 
 // Connect to MongoDB
@@ -51,8 +53,9 @@ app.use((req, res, next) => {
 
 // Use Routes
 app.use(authRoutes);
-app.use(userRoutes);
-app.use(semesterRoutes);
+app.use("/users", userRoutes);
+app.use("/semesters", semesterRoutes);
+app.use("/registrations", registrationRoutes);
 
 app.get("/", requireAuth, (req, res) => {
   res.status(200).json({
