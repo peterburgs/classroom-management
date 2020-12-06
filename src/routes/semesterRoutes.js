@@ -9,24 +9,29 @@ const router = express.Router();
 // Ensure Router use middleware
 router.use(requireAuth);
 
-// GET Method: get a track
+// GET Method: get a Semester
 // TODO: attach list of registration belongs to that semester
-router.get("/", async (req, res) => {
-  const semester = await Semester.find({ isOpening: true });
-  if (!semester) {
-    return res.status(404).json({
-      message: "No semester is opening",
+router.get("/", (req, res) => {
+  Semester.findOne({ isOpening: true })
+    .populate("registrations")
+    .exec()
+    .then((doc) => {
+      return res.status(200).json({
+        message: "Found",
+        count: doc.length,
+        semester: doc,
+      });
+    })
+    .catch((err) => {
+      res.status(404).json({
+        message: "No semester is opening",
+      });
     });
-  }
-  return res.status(200).json({
-    message: "Found",
-    semester,
-  });
 });
 
 // POST Method: create a new Semester
 router.post("/", async (req, res) => {
-  if (req.role === "LECTURER" || !req.role) {
+  if (req.role === "LECTURER" || req.role == "") {
     return res.status(403).json({
       message: "ADMIN authorization required!",
     });

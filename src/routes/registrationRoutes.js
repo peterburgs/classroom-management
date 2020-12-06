@@ -3,10 +3,10 @@ const mongoose = require("mongoose");
 
 // Import Models
 const Registration = mongoose.model("Registration");
-
+const Semester = mongoose.model("Semester");
 const router = express.Router();
 
-// POST Method Create a Registration
+// POST Method: Create a new Registration
 router.post("/", async (req, res) => {
   const registration = new Registration({
     patch: req.body.patch,
@@ -15,21 +15,29 @@ router.post("/", async (req, res) => {
     isOpening: req.body.isOpening,
     semesterId: req.body.semesterId,
   });
-  registration
-    .save()
-    .then((doc) => {
-      res.status(201).json({
-        message: "A new Registration has been created!",
-        registration: doc,
+  registration.save().then((doc) => {
+    Semester.findOne({ _id: registration.semesterId })
+      .exec()
+      .then(() => {
+        Semester.update(
+          { _id: registration.semesterId },
+          { $push: { registrations: [registration] } }
+        )
+          .exec()
+          .then((result) => {
+            res.status(201).json({
+              message: "A new Registration has been created!",
+              registration: result,
+            });
+          })
+          .catch((err) => {
+            res.status(500).json({
+              message: "Cannot create new Registration",
+              err,
+            });
+          });
       });
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({
-        message: "Cannot create new Registration",
-        err,
-      });
-    });
+  });
 });
 
 // PUT Method: Update an existing registration
