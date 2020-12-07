@@ -3,6 +3,10 @@ const mongoose = require("mongoose");
 // Schema
 const semesterSchema = new mongoose.Schema(
   {
+    semesterName: {
+      type: String,
+      default: "New Semester",
+    },
     startDate: {
       type: Date,
       required: true,
