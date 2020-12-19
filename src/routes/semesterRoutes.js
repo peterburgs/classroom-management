@@ -11,36 +11,44 @@ router.use(requireAuth);
 
 // GET Method: get a Semester
 // TODO: attach list of registration belongs to that semester
-router.get("/", (req, res) => {
-  Semester.findOne({ isOpening: true })
-    .populate("registrations")
-    .exec()
-    .then((doc) => {
-      return res.status(200).json({
+router.get("/", async (req, res) => {
+  try {
+    const result = await Semester.findOne({ isOpening: true })
+      .populate("registrations")
+      .exec();
+    if (result) {
+      res.status(200).json({
         message: "Found",
-        count: doc.length,
-        semester: doc,
+        count: result.length,
+        semester: result,
       });
-    })
-    .catch((err) => {
-      res.status(404).json({
+    } else {
+      res.status(200).json({
         message: "No semester is opening",
       });
+    }
+  } catch (err) {
+    res.status(500).json({
+      message: err,
     });
+  }
 });
 
 // POST Method: create a new Semester
-router.post("/", async (req, res) => {
-  if (req.role === "LECTURER" || req.role == "") {
+router.post("/", (req, res) => {
+  if (req.body.role === "LECTURER" || req.body.role === "") {
     return res.status(403).json({
       message: "ADMIN authorization required!",
     });
   }
+
+  console.log(req.body);
+
   const semester = new Semester({
-    name: req.semesterName,
-    startDate: req.startDate,
-    numberOfWeeks: req.numberOfWeeks,
-    isOpening: req.isOpening,
+    semesterName: req.body.semesterName,
+    startDate: req.body.startDate,
+    numberOfWeeks: req.body.numberOfWeeks,
+    isOpening: req.body.isOpening,
   });
 
   semester
@@ -68,7 +76,8 @@ router.put("/:semesterId", (req, res) => {
   for (const [key, val] of Object.entries(req.body)) {
     updateOps[key] = val;
   }
-  Semester.updateOne({ _id: id }, { $set: updateOps })
+  Semester.findByIdAndUpdate({ _id: id }, { $set: updateOps }, { new: true })
+    .populate("registrations")
     .exec()
     .then((result) => {
       res.status(200).json(result);
