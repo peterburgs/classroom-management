@@ -12,7 +12,7 @@ const semesterSchema = new mongoose.Schema(
       required: true,
       default: new Date(),
     },
-    numberOfWeek: {
+    numberOfWeeks: {
       type: Number,
       required: true,
       default: 15,
