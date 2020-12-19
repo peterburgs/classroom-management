@@ -7,7 +7,7 @@ const User = mongoose.model("User");
 const router = express.Router();
 
 // GET Method: get a user
-router.get("/users", async (req, res) => {
+router.get("/", async (req, res) => {
   const email = req.body.email;
   if (!email) {
     return res.status(422).json({

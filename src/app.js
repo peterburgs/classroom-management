@@ -1,14 +1,26 @@
+// Import Models
 require("./models/User");
+require("./models/Semester");
+require("./models/Registration");
+require("./models/Teaching");
+require("./models/Course");
 
 const express = require("express");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const app = express();
+
+// Middlewares
 const requireAuth = require("./middlewares/requireAuth");
+
 // Routers
 const authRoutes = require("../src/routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
+const semesterRoutes = require("./routes/semesterRoutes");
+const registrationRoutes = require("./routes/registrationRoutes");
+const teachingRoutes = require("./routes/teachingRoutes");
+const courseRoutes = require("./routes/courseRoutes");
 // Config app
 
 // Connect to MongoDB
@@ -47,8 +59,12 @@ app.use((req, res, next) => {
 });
 
 // Use Routes
-app.use(authRoutes);
-app.use(userRoutes);
+app.use("/auth", authRoutes);
+app.use("/users", userRoutes);
+app.use("/semesters", semesterRoutes);
+app.use("/registrations", registrationRoutes);
+app.use("/teachings", teachingRoutes);
+app.use("/courses", courseRoutes);
 
 app.get("/", requireAuth, (req, res) => {
   res.status(200).json({
