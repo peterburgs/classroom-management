@@ -25,20 +25,20 @@ router.post("/", async (req, res) => {
     numberOfPracticalWeeks: req.body.numberOfPracticalWeeks,
     registrationId: req.body.registrationId,
   });
-  teaching
-    .save()
-    .then((doc) => {
+  try {
+    const result = await teaching.save();
+    if (result) {
       res.status(201).json({
         message: "Created",
         user: doc,
       });
-    })
-    .catch((err) => {
-      res.status(500).json({
-        message: "Cannot created",
-        err,
-      });
+    }
+  } catch (err) {
+    res.status(500).json({
+      message: "Cannot created",
+      err,
     });
+  }
 });
 
 // PUT Method: Edit an existing teaching
@@ -48,15 +48,18 @@ router.put("/:teachingId", (req, res) => {
   for (const [key, val] of Object.entries(req.body)) {
     updateOps[key] = val;
   }
-  Teaching.updateOne({ _id: id }, { $set: updateOps })
-    .exec()
-    .then((result) => {
+  try {
+    const result = Teaching.updateOne(
+      { _id: id },
+      { $set: updateOps }
+    ).exec();
+    if (result) {
       res.status(200).json(result);
-    })
-    .catch((error) => {
-      console.log(error);
-      res.status(500).json({ error: err });
-    });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: err.message });
+  }
 });
 // Export
 

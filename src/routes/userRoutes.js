@@ -13,20 +13,20 @@ router.post("/", async (req, res) => {
     fullname: req.body.fullname,
     roles: req.body.role,
   });
-  user
-    .save()
-    .then((doc) => {
+  try {
+    const result = await user.save();
+    if (result) {
       res.status(201).json({
         message: "Created",
         user: doc,
       });
-    })
-    .catch((err) => {
-      res.status(500).json({
-        message: "Cannot created",
-        err,
-      });
+    }
+  } catch (err) {
+    res.status(500).json({
+      message: "Cannot created",
+      err,
     });
+  }
 });
 
 // Export
