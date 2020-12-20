@@ -4,6 +4,7 @@ require("./models/Semester");
 require("./models/Registration");
 require("./models/Teaching");
 require("./models/Course");
+require("./models/Lab");
 
 const express = require("express");
 const morgan = require("morgan");
@@ -21,6 +22,7 @@ const semesterRoutes = require("./routes/semesterRoutes");
 const registrationRoutes = require("./routes/registrationRoutes");
 const teachingRoutes = require("./routes/teachingRoutes");
 const courseRoutes = require("./routes/courseRoutes");
+const scheduleRoutes = require("./routes/scheduleRoutes");
 // Config app
 
 // Connect to MongoDB
@@ -65,6 +67,7 @@ app.use("/semesters", semesterRoutes);
 app.use("/registrations", registrationRoutes);
 app.use("/teachings", teachingRoutes);
 app.use("/courses", courseRoutes);
+app.use("/schedules", scheduleRoutes);
 
 app.get("/", requireAuth, (req, res) => {
   res.status(200).json({

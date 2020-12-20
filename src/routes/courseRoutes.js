@@ -6,44 +6,49 @@ const Course = mongoose.model("Course");
 
 const router = express.Router();
 
-// POST Method Create a new Teaching
+// POST Method Create a new Course
 router.post("/", async (req, res) => {
   const course = new Course({
     courseName: req.body.courseName,
     numberOfCredits: req.body.numberOfCredits,
   });
-  course
-    .save()
-    .then((doc) => {
+  try {
+    const result = await course.save();
+    if (result) {
       res.status(201).json({
         message: "New Course is Created",
-        user: doc,
+        course: result,
       });
-    })
-    .catch((err) => {
-      res.status(500).json({
-        message: "Cannot created",
-        err,
-      });
+    }
+  } catch (err) {
+    res.status(500).json({
+      message: "Cannot created",
+      err: err.message,
     });
+  }
 });
 
-// PUT Method: Edit an existing teaching
-router.put("/:courseId", (req, res) => {
+// PUT Method: Edit an existing Course
+router.put("/:courseId", async (req, res) => {
   const id = req.params.courseId;
   const updateOps = {};
   for (const [key, val] of Object.entries(req.body)) {
     updateOps[key] = val;
   }
-  Course.updateOne({ _id: id }, { $set: updateOps })
-    .exec()
-    .then((result) => {
-      res.status(200).json(result);
-    })
-    .catch((error) => {
-      console.log(error);
-      res.status(500).json({ error: err });
+  try {
+    const result = await Course.updateOne(
+      { _id: id },
+      { $set: updateOps }
+    ).exec();
+    if (result) {
+      res.status(201).json({ result });
+    }
+  } catch (err) {
+    res.status(500).json({
+      message: "Cannot created",
+      err: err.message,
     });
+  }
 });
 // Export
 

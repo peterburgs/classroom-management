@@ -9,7 +9,9 @@ const router = express.Router();
 // POST Method: Create a new Registration
 router.post("/", async (req, res) => {
   try {
-    const semesterResult = await Semester.findOne({ _id: req.body.semesterId }).exec();
+    const semesterResult = await Semester.findOne({
+      _id: req.body.semesterId,
+    }).exec();
     if (semesterResult) {
       const registration = new Registration({
         patch: req.body.patch,
@@ -32,21 +34,26 @@ router.post("/", async (req, res) => {
 });
 
 // PUT Method: Update an existing registration
-router.put("/:registrationId", (req, res) => {
+router.put("/:registrationId", async (req, res) => {
   const id = req.params.registrationId;
   const updateOps = {};
   for (const [key, val] of Object.entries(req.body)) {
     updateOps[key] = val;
   }
-  Registration.updateOne({ _id: id }, { $set: updateOps })
-    .exec()
-    .then((result) => {
-      res.status(200).json(result);
-    })
-    .catch((error) => {
-      console.log(error);
-      res.status(500).json({ error: err });
-    });
+  try {
+    const result = await Registration.updateOne(
+      { _id: id },
+      { $set: updateOps }
+    ).exec();
+    if (result) {
+      res.status(200).json({
+        registration: result,
+      });
+    }
+  } catch (err) {
+    console.log(error);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // Export
