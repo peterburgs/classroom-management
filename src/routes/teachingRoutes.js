@@ -1,10 +1,15 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const requireAuth = require("../middlewares/requireAuth");
+
 
 // Import Models
 const Teaching = mongoose.model("Teaching");
 
 const router = express.Router();
+
+// Ensure Router use middleware
+router.use(requireAuth);
 
 // POST Method Create a new Teaching
 router.post("/", async (req, res) => {
