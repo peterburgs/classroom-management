@@ -12,11 +12,12 @@ const googleAuth = async (token) => {
     idToken: token,
     audience: process.env.GOOGLE_CLIENT_ID,
   });
-  return (payload = ticket.getPayload());
+  return ticket.getPayload();
 };
 
 module.exports = async (req, res, next) => {
   const { authorization } = req.headers;
+  console.log(authorization);
   if (!authorization) {
     return res.status(401).json({
       message: "Not authenticated yet. Authentication required!",

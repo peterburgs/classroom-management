@@ -5,6 +5,7 @@ require("./models/Registration");
 require("./models/Teaching");
 require("./models/Course");
 require("./models/Lab");
+require("./models/RegistrableCourse");
 
 const express = require("express");
 const morgan = require("morgan");
@@ -23,6 +24,7 @@ const registrationRoutes = require("./routes/registrationRoutes");
 const teachingRoutes = require("./routes/teachingRoutes");
 const courseRoutes = require("./routes/courseRoutes");
 const scheduleRoutes = require("./routes/scheduleRoutes");
+const labRoutes = require("./routes/labRoutes");
 // Config app
 
 // Connect to MongoDB
@@ -68,6 +70,7 @@ app.use("/registrations", registrationRoutes);
 app.use("/teachings", teachingRoutes);
 app.use("/courses", courseRoutes);
 app.use("/schedules", scheduleRoutes);
+app.use("/labs", labRoutes);
 
 app.get("/", requireAuth, (req, res) => {
   res.status(200).json({

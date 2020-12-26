@@ -3,6 +3,10 @@ const rolesEnum = require("../enums/roles");
 // Schema
 const userSchema = new mongoose.Schema(
   {
+    _id: {
+      type: String,
+      required: true,
+    },
     email: {
       type: String,
       required: true,
@@ -16,6 +20,16 @@ const userSchema = new mongoose.Schema(
       type: Array,
       default: [rolesEnum.LECTURER],
     },
+    isRemoved: {
+      type: Boolean,
+      required: true,
+    },
+    teachings: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Teaching",
+      },
+    ],
   },
   { timestamps: true }
 );
