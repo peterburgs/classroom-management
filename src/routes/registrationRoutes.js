@@ -45,7 +45,9 @@ router.post("/", async (req, res) => {
             });
 
             const registrableCourseResult = await registrableCourse.save();
-            registrationResult.registrableCourses.push(registrableCourseResult);
+            registrationResult.registrableCourses.push(
+              registrableCourseResult
+            );
             await registrationResult.save();
           }
         } catch (err) {
@@ -85,6 +87,33 @@ router.put("/:registrationId", async (req, res) => {
   }
 });
 
-// Export
+// GET Method: get number of opening registrations
+router.get("/opening", async (req, res) => {
+  try {
+    const openingRegistration = await Registration.findOne({
+      isOpening: true,
+    });
+    if (openingRegistration) {
+      res.status(200).json({
+        message: "Found",
+        count: 1,
+        openingRegistration: openingRegistration,
+      });
+    } else {
+      res.status(200).json({
+        message: "No Registration is opening",
+        openingRegistration: openingRegistration,
+        count: 0,
+      });
+    }
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).json({
+      message: err.message,
+      count: 0,
+    });
+  }
+});
 
+// Export
 module.exports = router;

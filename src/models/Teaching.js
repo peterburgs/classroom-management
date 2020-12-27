@@ -4,12 +4,12 @@ const mongoose = require("mongoose");
 const teachingSchema = new mongoose.Schema(
   {
     user: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: String,
       ref: "User",
       required: true,
     },
     course: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: String,
       ref: "Course",
       required: true,
     },
@@ -53,6 +53,16 @@ const teachingSchema = new mongoose.Schema(
       ref: "Registration",
       required: true,
     },
+    isRemoved: {
+      type: Boolean,
+      required: true,
+    },
+    labUsages: [
+      {
+        type: mongoose.Types.ObjectId,
+        ref: "LabUsage",
+      },
+    ],
   },
   { timestamps: true }
 );

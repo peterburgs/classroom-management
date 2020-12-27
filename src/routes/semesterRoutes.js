@@ -45,6 +45,7 @@ router.post("/", async (req, res) => {
     startDate: req.body.startDate,
     numberOfWeeks: req.body.numberOfWeeks,
     isOpening: req.body.isOpening,
+    labSchedule: [],
   });
   try {
     const result = await semester.save();
