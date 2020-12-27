@@ -6,6 +6,7 @@ require("./models/Teaching");
 require("./models/Course");
 require("./models/Lab");
 require("./models/RegistrableCourse");
+require("./models/LabUsage");
 
 const express = require("express");
 const morgan = require("morgan");

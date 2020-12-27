@@ -1,4 +1,21 @@
-const schedule = function (labs, teachings, numberOfWeek) {
+const mongoose = require("mongoose");
+
+// Import Models
+const LabUsage = mongoose.model("LabUsage");
+const Teaching = mongoose.model("Teaching");
+const Semester = mongoose.model("Semester");
+
+// Import Lodash
+const _ = require("lodash");
+
+// Schedule
+const schedule = async (
+  labs,
+  teachings,
+  numberOfWeeks,
+  semesterId,
+  isNew
+) => {
   let teachingQueue = [];
   let labQueue = [];
   for (let teach of teachings) {
@@ -41,7 +58,20 @@ const schedule = function (labs, teachings, numberOfWeek) {
     }
     return arr;
   };
-  let labSchedule = makeArray(numberOfWeek * 6, labs.length * 15, 0);
+
+  // Init labSchedule
+  let labSchedule = null;
+  let semester = await Semester.findOne({ _id: semesterId });
+
+  // If Admin wants to make New Schedule
+  if (isNew) {
+    labSchedule = makeArray(numberOfWeeks * 6, labs.length * 15, 0);
+  }
+  // If Admin wants to Modify an existing Schedule
+  else {
+    labSchedule = _.cloneDeep(semester.labSchedule);
+  }
+
   // Scheduling
   while (teachingQueue.length) {
     let currentTeaching = teachingQueue.shift();
@@ -49,7 +79,7 @@ const schedule = function (labs, teachings, numberOfWeek) {
       let isAvailable = -1;
       // Find the days that match currentTeaching.dayOfWeek
       let breakDay = false;
-      for (let j = 0; j < 90; j++) {
+      for (let j = 0; j < numberOfWeeks * 6; j++) {
         if (breakDay == false)
           if (j % 6 == currentTeaching.dayOfWeek) {
             // If record is found
@@ -59,6 +89,7 @@ const schedule = function (labs, teachings, numberOfWeek) {
               period <= currentTeaching.endPeriod;
               period++
             ) {
+              // Skip occupied lab usages
               if (labSchedule[period + 15 * i][j] != 0) {
                 break;
               }
@@ -72,17 +103,39 @@ const schedule = function (labs, teachings, numberOfWeek) {
       if (
         isAvailable !== -1 &&
         currentTeaching.numberOfPracticalWeeks * 12 + isAvailable <=
-          90
+          numberOfWeeks * 6
       ) {
         let currentDay = isAvailable;
         while (currentTeaching.numberOfPracticalWeeks--) {
+          //
+          // Init lab usage
+          const _labUsage = new LabUsage({
+            lab: labQueue[i]._id,
+            teaching: currentTeaching._id,
+            weekNo: Math.floor(currentDay / 6),
+            dayOfWeek: currentTeaching.dayOfWeek,
+            startPeriod: currentTeaching.startPeriod,
+            endPeriod: currentTeaching.endPeriod,
+            isRemoved: false,
+          });
+          // save lab usage
+          const _labUsageSave = await _labUsage.save();
+          const teaching = await Teaching.findOne({
+            _id: currentTeaching._id,
+          });
+          // Push labUsage to Teaching and Save
+          await teaching.labUsages.push(_labUsageSave);
+          await teaching.save();
+          //
           for (
             let currentSchedulePeriod = currentTeaching.startPeriod;
             currentSchedulePeriod <= currentTeaching.endPeriod;
             currentSchedulePeriod++
           ) {
-            labSchedule[currentSchedulePeriod + 15 * i][currentDay] =
-              currentTeaching.course;
+            // Mark the cell as 1 (occupied)
+            labSchedule[currentSchedulePeriod + 15 * i][
+              currentDay
+            ] = 1;
           }
           currentDay += 12;
         }
@@ -90,6 +143,9 @@ const schedule = function (labs, teachings, numberOfWeek) {
       }
     }
   }
+  //Save labSchedule just created to Semester
+  semester.labSchedule = labSchedule;
+  await semester.save();
   return labSchedule;
 };
 module.exports = schedule;
