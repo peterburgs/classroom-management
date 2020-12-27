@@ -17,14 +17,12 @@ const googleAuth = async (token) => {
 
 module.exports = async (req, res, next) => {
   const { authorization } = req.headers;
-  console.log(authorization);
   if (!authorization) {
     return res.status(401).json({
       message: "Not authenticated yet. Authentication required!",
     });
   }
   const token = authorization.split(" ")[1];
-  console.log(token);
   try {
     const user = await googleAuth(token);
     req.user = user;
