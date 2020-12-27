@@ -1,17 +1,13 @@
 const mongoose = require("mongoose");
 
 // Schema
-const courseSchema = new mongoose.Schema(
+const labSchema = new mongoose.Schema(
   {
-    _id: {
+    labName: {
       type: String,
       required: true,
     },
-    courseName: {
-      type: String,
-      required: true,
-    },
-    numberOfCredits: {
+    capacity: {
       type: Number,
       required: true,
     },
@@ -23,4 +19,4 @@ const courseSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-mongoose.model("Course", courseSchema);
+mongoose.model("Lab", labSchema);

@@ -2,23 +2,24 @@ const express = require("express");
 const mongoose = require("mongoose");
 const requireAuth = require("../middlewares/requireAuth");
 
+
 // Import Models
-const User = mongoose.model("User");
+const Lab = mongoose.model("Lab");
 
 const router = express.Router();
 
 // Ensure Router use middleware
 router.use(requireAuth);
 
-// GET Method: get all users
+// GET Method: get all labs
 router.get("/", async (req, res) => {
   try {
-    const result = await User.find({ isRemoved: false }).exec();
+    const result = await Lab.find({ isRemoved: false }).exec();
     if (result) {
       console.log(result);
       res.status(200).json({
         message: "Found",
-        users: result,
+        labs: result,
       });
     }
   } catch (err) {
@@ -30,16 +31,15 @@ router.get("/", async (req, res) => {
   }
 });
 
-// GET Method: get user by Id
-router.get("/:userId", async (req, res) => {
-  const id = req.params.userId;
+// GET Method: get lab by Id
+router.get("/:labId", async (req, res) => {
+  const id = req.params.labId;
   try {
-    const user = await User.findOne({ _id: id, isRemoved: false });
-    if (user) {
-      console.log(user);
+    const lab = await Lab.findOne({ _id: id, isRemoved: false });
+    if (lab) {
       res.status(200).json({
         message: "Found",
-        user,
+        lab,
       });
     }
   } catch (err) {
@@ -51,21 +51,19 @@ router.get("/:userId", async (req, res) => {
   }
 });
 
-// POST Method Create a new User
+// POST Method Create a new Lab
 router.post("/", async (req, res) => {
-  const user = new User({
-    _id: req.body.userId,
-    fullName: req.body.fullName,
-    email: req.body.email,
+  const lab = new Lab({
+    labName: req.body.labName,
+    capacity: req.body.capacity,
     isRemoved: req.body.isRemoved,
-    roles: req.body.roles,
   });
   try {
-    const result = await user.save();
+    const result = await lab.save();
     if (result) {
       res.status(201).json({
-        message: "New User is Created",
-        user: result,
+        message: "New Lab is Created",
+        lab: result,
       });
     }
   } catch (err) {
@@ -76,21 +74,21 @@ router.post("/", async (req, res) => {
   }
 });
 
-// PUT Method: Edit an existing User
-router.put("/:userId", async (req, res) => {
-  const id = req.params.userId;
+// PUT Method: Edit an existing Lab
+router.put("/:labId", async (req, res) => {
+  const id = req.params.labId;
   const updateOps = {};
   for (const [key, val] of Object.entries(req.body)) {
     updateOps[key] = val;
   }
   try {
-    const result = await User.findByIdAndUpdate(
+    const result = await Lab.findByIdAndUpdate(
       { _id: id, isRemoved: false },
       { $set: updateOps },
       { new: true }
     ).exec();
     if (result) {
-      res.status(201).json({ user: result });
+      res.status(201).json({ lab: result });
     }
   } catch (err) {
     res.status(500).json({
@@ -100,16 +98,16 @@ router.put("/:userId", async (req, res) => {
   }
 });
 
-// Delete Method: Delete an existing User
-router.delete("/:userId", async (req, res) => {
-  const id = req.params.userId;
+// Delete Method: Delete an existing Lab
+router.delete("/:labId", async (req, res) => {
+  const id = req.params.labId;
   try {
-    const result = await User.findByIdAndUpdate(
+    const result = await Lab.findByIdAndUpdate(
       { _id: id, isRemoved: false },
       { $set: { isRemoved: true } }
     ).exec();
     if (result) {
-      res.status(201).json({ user: result });
+      res.status(201).json({ lab: result });
     }
   } catch (err) {
     res.status(500).json({

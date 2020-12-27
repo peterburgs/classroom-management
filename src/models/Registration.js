@@ -22,10 +22,22 @@ const registrationSchema = new mongoose.Schema(
       required: true,
       default: false,
     },
-    semesterId: {
+    semester: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Semester",
     },
+    registrableCourses: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "RegistrableCourse",
+      },
+    ],
+    teachings: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Teaching",
+      },
+    ],
   },
   { timestamps: true }
 );

@@ -3,12 +3,12 @@ const mongoose = require("mongoose");
 // Schema
 const teachingSchema = new mongoose.Schema(
   {
-    userId: {
+    user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
-    courseId: {
+    course: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Course",
       required: true,
@@ -48,7 +48,7 @@ const teachingSchema = new mongoose.Schema(
       required: true,
       default: 7,
     },
-    registrationId: {
+    registration: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Registration",
       required: true,

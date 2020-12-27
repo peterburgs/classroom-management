@@ -10,7 +10,6 @@ const router = express.Router();
 router.use(requireAuth);
 
 // GET Method: get a Semester
-// TODO: attach list of registration belongs to that semester
 router.get("/", async (req, res) => {
   try {
     const result = await Semester.findOne({ isOpening: true })
@@ -35,56 +34,57 @@ router.get("/", async (req, res) => {
 });
 
 // POST Method: create a new Semester
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   if (req.body.role === "LECTURER" || req.body.role === "") {
     return res.status(403).json({
       message: "ADMIN authorization required!",
     });
   }
-
-  console.log(req.body);
-
   const semester = new Semester({
     semesterName: req.body.semesterName,
     startDate: req.body.startDate,
     numberOfWeeks: req.body.numberOfWeeks,
     isOpening: req.body.isOpening,
   });
-
-  semester
-    .save()
-    .then((doc) => {
-      res.status(201).json({
+  try {
+    const result = await semester.save();
+    if (result) {
+      res.status(200).json({
         message: "Semester is saved successfully",
-        semester: doc,
+        semester: result,
       });
-    })
-    .catch((err) => {
-      console.log("*Error: Cannot create Semester");
-      res.status(500).json({
-        message: "Cannot create new Semester",
-        err,
-      });
+    }
+  } catch (err) {
+    res.status(500).json({
+      message: "Cannot create new Semester",
+      err,
     });
+  }
 });
 
 // PUT Method: Update an existing Semester
-router.put("/:semesterId", (req, res) => {
+router.put("/:semesterId", async (req, res) => {
   const id = req.params.semesterId;
-  console.log("req.body: ", req.body);
   const updateOps = {};
   for (const [key, val] of Object.entries(req.body)) {
     updateOps[key] = val;
   }
-  Semester.findByIdAndUpdate({ _id: id }, { $set: updateOps }, { new: true })
-    .populate("registrations")
-    .exec()
-    .then((result) => {
-      res.status(200).json(result);
-    })
-    .catch((error) => {
-      console.log(error);
-      res.status(500).json({ error: err });
-    });
+  try {
+    const result = await Semester.findByIdAndUpdate(
+      { _id: id },
+      { $set: updateOps },
+      { new: true }
+    )
+      .populate("registrations")
+      .exec();
+    if (result) {
+      res.status(200).json({
+        message: "Semester is saved successfully",
+        semester: result,
+      });
+    }
+  } catch (error) {
+    res.status(500).json({ error: err.message });
+  }
 });
 module.exports = router;

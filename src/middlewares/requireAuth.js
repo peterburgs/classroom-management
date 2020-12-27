@@ -12,7 +12,7 @@ const googleAuth = async (token) => {
     idToken: token,
     audience: process.env.GOOGLE_CLIENT_ID,
   });
-  return (payload = ticket.getPayload());
+  return ticket.getPayload();
 };
 
 module.exports = async (req, res, next) => {
@@ -23,7 +23,6 @@ module.exports = async (req, res, next) => {
     });
   }
   const token = authorization.split(" ")[1];
-  console.log(token);
   try {
     const user = await googleAuth(token);
     req.user = user;
