@@ -28,6 +28,11 @@ const semesterSchema = new mongoose.Schema(
         ref: "Registration",
       },
     ],
+    labSchedule: {
+      type: Array,
+      required: false,
+      default: [],
+    },
   },
   { timestamps: true }
 );

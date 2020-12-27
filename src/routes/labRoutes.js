@@ -2,7 +2,6 @@ const express = require("express");
 const mongoose = require("mongoose");
 const requireAuth = require("../middlewares/requireAuth");
 
-
 // Import Models
 const Lab = mongoose.model("Lab");
 
